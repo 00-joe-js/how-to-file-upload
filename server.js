@@ -1,8 +1,8 @@
-const express = require('express');
+const express = require('express'); // CommonJS require.
 
-const app = express();
+const app = express(); // "pipeline" --> requests go through there, to each middleware
 
-app.use(express.static(__dirname + "/front-end"));
+app.use(express.static(__dirname + "/front-end")); // 1st portion of pipeline
 
 app.get("/", () => {
     res.sendFile(__dirname + "/front-end/index.html");

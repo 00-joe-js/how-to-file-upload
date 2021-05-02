@@ -5,3 +5,25 @@ console.table([
     {step: 4, description: "How and where to store file data"},
     {step: 5, description: "How and where to store file metadata and reference"},
 ]);
+
+window.addEventListener("DOMContentLoaded", () => {
+
+    const fileInput = document.querySelector("#the-file-input");
+
+    fileInput.addEventListener("change", (event) => {
+        // fileInput === event.target
+        const myReader = new FileReader();
+        const theFileTheyChose = fileInput.files[0];
+        
+        // Start reading in the file as a certain representation.
+        myReader.readAsDataURL(theFileTheyChose);
+        // readAsDataUrl: data url === base64 string
+
+        // Listen for the event that fires when the reader has loaded the file.
+        myReader.addEventListener("load", () => {
+            // Expect the .result property to exist.
+            document.querySelector("#preview-image").src = myReader.result;
+        });
+    });
+
+});
