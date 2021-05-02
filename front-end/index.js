@@ -23,6 +23,11 @@ window.addEventListener("DOMContentLoaded", () => {
         myReader.addEventListener("load", () => {
             // Expect the .result property to exist.
             document.querySelector("#preview-image").src = myReader.result;
+            fetch("/base64-file-upload", {
+                method: "POST", 
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ fileData: myReader.result })
+            });
         });
     });
 
