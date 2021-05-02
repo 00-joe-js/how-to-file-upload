@@ -1,6 +1,10 @@
 const fs = require("fs");
 const express = require('express'); // CommonJS require.
 
+// BIG ASSUMPTION that a CLOUNDINARY_URL environment variable exists on the system.
+// Heroku -- "Config Var"
+const cloudinary = require("cloudinary").v2;
+
 const app = express(); // "pipeline" --> requests go through there, to each middleware
 
 app.use((req, res, next) => {
@@ -27,6 +31,7 @@ app.use(express.json({ limit: "200mb" })); // makes req.body happen
 app.post("/base64-file-upload", (req, res, next) => {
     const stringRepOfMyImage = req.body.fileData.split(",")[1];
     const rawData = Buffer.from(stringRepOfMyImage, "base64"); // *
+
     fs.writeFile(
         __dirname + `/uploadedFiles/${req.body.meta.name}`,
         rawData,
@@ -35,7 +40,13 @@ app.post("/base64-file-upload", (req, res, next) => {
                 next(err);
                 return;
             }
-            res.send("Success!");
+            // UPLOAD WITH CLOUDINARY***
+            cloudinary.uploader.upload(
+                __dirname + `/uploadedFiles/${req.body.meta.name}`, // here is a file to upload on my system
+                function (error, result) { 
+                    res.send(result.url);
+                }
+            );
         });
 });
 
