@@ -9,6 +9,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(__dirname + "/front-end"));
+app.use("/files", express.static(__dirname + "/uploadedFiles"));
 
 /*
     1. Sending the base64 string up to the server, decoding it. (modern)
@@ -18,12 +19,24 @@ app.get("/", () => {
     res.sendFile(__dirname + "/front-end/index.html");
 });
 
+app.get("/users", (req, res) => {
+    res.send([{ id: 1, name: "Joe" }]);
+});
+
 app.use(express.json({ limit: "200mb" })); // makes req.body happen
-app.post("/base64-file-upload", (req, res) => {
+app.post("/base64-file-upload", (req, res, next) => {
     const stringRepOfMyImage = req.body.fileData.split(",")[1];
-    const rawData = Buffer.from(stringRepOfMyImage, "base64");
-    console.log(rawData); // instance of "Buffer"--how Node.js represents raw data
-    fs.writeFile(__dirname + `/uploadedFiles/${Date.now()}.png`, rawData, () => {});
+    const rawData = Buffer.from(stringRepOfMyImage, "base64"); // *
+    fs.writeFile(
+        __dirname + `/uploadedFiles/${req.body.meta.name}`,
+        rawData,
+        (err) => {
+            if (err) {
+                next(err);
+                return;
+            }
+            res.send("Success!");
+        });
 });
 
 app.listen(7777, () => console.log(`

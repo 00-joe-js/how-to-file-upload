@@ -14,6 +14,8 @@ window.addEventListener("DOMContentLoaded", () => {
         // fileInput === event.target
         const myReader = new FileReader();
         const theFileTheyChose = fileInput.files[0];
+
+        console.log(theFileTheyChose);
         
         // Start reading in the file as a certain representation.
         myReader.readAsDataURL(theFileTheyChose);
@@ -26,7 +28,7 @@ window.addEventListener("DOMContentLoaded", () => {
             fetch("/base64-file-upload", {
                 method: "POST", 
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ fileData: myReader.result })
+                body: JSON.stringify({ fileData: myReader.result, meta: { name: theFileTheyChose.name } })
             });
         });
     });
